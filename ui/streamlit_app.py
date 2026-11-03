@@ -2,7 +2,6 @@ import streamlit as st
 import sys
 from pathlib import Path
 
-# Add project root to sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from src.generation.chain import FinConRAGPipeline
@@ -14,13 +13,24 @@ st.set_page_config(
     layout="wide"
 )
 
-# Custom header
-st.title("💼 FinCon & Financial Regulatory Intelligence Assistant")
+st.markdown("""<style>
+.stApp{background:#FFFFFF}
+[data-testid="stSidebar"]{background:#EAF7F6;border-right:2px solid #22B9AE}
+.stApp h1,.stApp h2,.stApp h3,.stApp h4{color:#2B2F35}
+.stApp p,.stApp label,.stApp li,.stApp span{color:#2B2F35}
+.stButton>button{background:#22B9AE;color:#fff;border:none;border-radius:8px}
+.stButton>button:hover{background:#A44251;color:#fff}
+.stTextInput input,.stTextArea textarea,[data-baseweb="select"]>div{background:#fff!important;color:#2B2F35!important;border:1px solid #5DB5D7!important}
+[data-testid="stAlert"]{background:#FBF3DC;border-left:4px solid #EAC56A}
+[data-testid="stExpander"]{background:#F3FAFD;border:1px solid #5DB5D7}
+code{background:#FBF3DC!important;color:#A44251!important}
+</style>""", unsafe_allow_html=True)
+
+st.title(" FinCon & Financial Regulatory Intelligence Assistant")
 st.markdown(
     "**Production Hybrid RAG** • Hierarchical Parent-Child Indexing • Cross-Encoder Reranker • Citation Enforcement"
 )
 
-# Sidebar: Controls & Ingestion
 st.sidebar.header("⚙️ Configuration & Pipeline")
 top_k = st.sidebar.slider("Top-K Rerank Results", min_value=1, max_value=8, value=3)
 
@@ -44,14 +54,12 @@ sample_queries = [
 
 selected_sample = st.sidebar.selectbox("Choose a 2026 sample query:", [""] + sample_queries)
 
-# Initialize pipeline
 @st.cache_resource
 def get_pipeline():
     return FinConRAGPipeline()
 
 pipeline = get_pipeline()
 
-# Main query input
 user_query = st.text_input("Enter your Financial Controlling / Accounting Question:", value=selected_sample if selected_sample else "")
 
 if st.button("🔍 Search & Analyze", type="primary"):
@@ -61,11 +69,9 @@ if st.button("🔍 Search & Analyze", type="primary"):
         with st.spinner("Executing Hybrid Retrieval, Reranking & Synthesis..."):
             result = pipeline.run(query=user_query, top_k_rerank=top_k)
 
-            # 1. Answer section
             st.markdown("### 📝 Financial Controlling Synthesis")
             st.markdown(result["answer"])
 
-            # Pre-Retrieval NER & Transformation
             entities = result.get("entities", [])
             if entities:
                 ent_badges = "  ".join([f"`🏷️ {e['text']} ({e['label']})`" for e in entities])
@@ -74,14 +80,12 @@ if st.button("🔍 Search & Analyze", type="primary"):
             if result.get("expanded_query") and result.get("expanded_query") != user_query:
                 st.info(f"🔄 **Pre-Retrieval Query Expansion:** `{result['expanded_query']}`")
 
-            # 2. Citations & Sources
             st.markdown("---")
             st.markdown("### 📚 Source Attributions")
             cols = st.columns(len(result["sources"]) if result["sources"] else 1)
             for i, src in enumerate(result["sources"]):
                 cols[i % len(cols)].info(f"📄 **{src}**")
 
-            # 3. Transparent Retrieval Deep Dive
             with st.expander("🔍 Deep Dive: Inspect Retrieved Child Chunks & Reranker Scores"):
                 for idx, chunk in enumerate(result["retrieved_child_chunks"], start=1):
                     st.markdown(f"#### Rank {idx}: `{chunk['id']}`")
@@ -90,6 +94,5 @@ if st.button("🔍 Search & Analyze", type="primary"):
                     st.markdown(f"**Parent ID:** `{chunk.get('parent_id')}` | **Metadata:** {chunk.get('metadata')}")
                     st.markdown("---")
 
-            # 4. Expanded Parent Contexts
             with st.expander("📖 Deep Dive: Full Parent Context Sent to LLM"):
                 st.code(result["context_used"], language="markdown")
