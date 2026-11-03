@@ -9,7 +9,7 @@ app_file: app.py
 pinned: false
 ---
 
-# 💼 FinCon & Financial Regulatory Intelligence Assistant (Milestone 1)
+# FinCon & Financial Regulatory Intelligence Assistant (Milestone 1)
 
 
 A production-grade **Hierarchical Hybrid RAG** application built with Python, FastAPI, and Streamlit, designed for **Financial Controlling (FinCon)** and regulatory compliance documentation (IFRS, ASC GAAP, and Corporate Policy manuals).
