@@ -16,7 +16,7 @@ A production-grade **Hierarchical Hybrid RAG** application built with Python, Fa
 
 ---
 
-## 🌟 Architecture Highlights
+##  Architecture Highlights
 
 1. **Hierarchical Parent-Child Indexing**:
    - Documents are split into large **Parent Chunks** (1,200 chars) preserving full accounting context.
@@ -35,7 +35,7 @@ A production-grade **Hierarchical Hybrid RAG** application built with Python, Fa
 
 ---
 
-## 🚀 Quickstart Guide
+## Quickstart Guide
 
 ### 1. Install Dependencies
 ```bash
@@ -67,7 +67,7 @@ python -m src.evaluation.evaluate_rag
 
 ---
 
-## 📁 Directory Layout
+##  Directory Layout
 ```text
 Milestone1_FinCon_RAG/
 ├── data/
